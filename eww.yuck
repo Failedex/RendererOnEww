@@ -1,0 +1,73 @@
+;; (deflisten data :initial "{points: [], lines: []}" "python ./scripts/square.py")
+(deflisten data :initial "{points: [], lines: []}" "python ./scripts/donut.py")
+;; (defvar data '{"points": [[100, 100, 100], [350, 200, 200]], "lines": [[225, 150, 6.055947079542171, 269.2582403567252]]}')
+
+(defwindow renderer 
+  :geometry (geometry
+             :x 0
+             :y 0
+             :width 160
+             :height 90
+             :anchor "center"
+             )
+  :stacking "overlay"
+  :monitor 0
+  (sillydisplay))
+
+(defwidget sillydisplay [] 
+  (box 
+    :orientation "v"
+    :space-evenly false
+    :width 640
+    :height 360
+    :class "window"
+    (for p in {data.points}
+      (box
+        :class "point"
+        :halign "start"
+        :valign "start"
+        :hexpand false
+        :vexpand false
+        :style "
+          margin-left: ${p[0]}px;
+          margin-right: -${p[0]+2}px;
+          margin-top: ${p[1]}px;
+          margin-bottom: -${p[1]+2}px;"
+        )
+    )
+    
+    (for l in {data.lines}
+      (box
+        :halign "start"
+        :valign "start"
+        :hexpand false
+        :vexpand false 
+        :style "
+          margin-left: ${round(l[0]-(l[3]/2), 0)}px;
+          margin-right: -${round(l[0]+(l[3]/2), 0)}px;
+          margin-top: ${round(l[1]-(l[3]/2), 0)}px;
+          margin-bottom: -${round(l[1]+(l[3]/2), 0)}px;
+        "
+        (transform 
+          :translate-x "50%"
+          :translate-y "50%"
+          (transform 
+            :translate-x "-50%"
+            :translate-y "-50%"
+            :rotate "${l[2]}"
+            (box 
+              :style "
+              margin: -${round(l[3]/2, 0)}px;
+              "
+              (box
+                :height 2
+                :valign "center"
+                :halign "center"
+                :width {round(l[3], 0)}
+                :hexpand false
+                :class "line"
+                ))))
+        ))
+
+    ))
+
